@@ -1,0 +1,30 @@
+name: Trigger on merge to develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  formatter:
+    name: formatter
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: set up go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ">=1.22.1"
+      - name: Install goimports
+        run: go install golang.org/x/tools/cmd/goimports@latest
+      - name: Format code
+        run: goimports -w .
+      - name: Auto commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Apply Code formatter changes"
